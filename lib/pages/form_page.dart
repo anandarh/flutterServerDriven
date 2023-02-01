@@ -12,22 +12,6 @@ class FormPage extends StatefulWidget {
 }
 
 class _FormPageState extends State<FormPage> {
-  final registry = JsonWidgetRegistry.instance;
-
-  @override
-  void initState() {
-    registry.registerFunctions({
-      'validateForm': ({args, required registry}) => () {
-            final BuildContext context = registry.getValue(args![0]);
-
-            final valid = Form.of(context).validate();
-            registry.setValue('form_validation', valid);
-          },
-    });
-
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -36,19 +20,21 @@ class _FormPageState extends State<FormPage> {
         if (snapshot.hasData) {
           return snapshot.data!.build(context: context);
         }
-        if (snapshot.hasError) {
-          return const Center(
-            child: Text('Error...'),
-          );
-        }
-        return const Center(
-          child: Text('Loading...'),
+        return Scaffold(
+          body: snapshot.hasError
+              ? const Center(
+                  child: Text('Error...'),
+                )
+              : const Center(
+                  child: Text('Loading...'),
+                ),
         );
       },
     );
   }
 
   Future<JsonWidgetData> loadAssets() async {
+    await Future.delayed(const Duration(milliseconds: 150));
     return JsonWidgetData.fromDynamic(
       json.decode(await rootBundle.loadString('assets/form.json')),
     )!;

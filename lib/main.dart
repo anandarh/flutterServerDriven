@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_server_driven/pages/form_page.dart';
+import 'package:flutter_server_driven/utils.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  Utils.registerFunctions;
+
   runApp(const MyApp());
 }
 
