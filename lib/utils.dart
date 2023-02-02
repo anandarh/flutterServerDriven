@@ -1,35 +1,65 @@
+import 'dart:convert';
 import 'dart:io';
+
+import 'package:archive/archive.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:json_dynamic_widget/json_dynamic_widget.dart';
 import 'package:path_provider/path_provider.dart';
 
 class Utils {
-  // Download budle from the server
-  Future<File> downloadBundle(String url, String bundleName) async {
-    var req = await http.Client().get(Uri.parse(url));
-    var file = await localBundle(bundleName);
-    return file.writeAsBytes(req.bodyBytes);
+  // Download bundle from the server
+  Future<void> downloadBundle({
+    required String url,
+    required String bundleName,
+  }) async {
+    http.Response req = await http.Client().get(Uri.parse(url));
+    var archive = ZipDecoder().decodeBytes(req.bodyBytes);
+
+    for (var file in archive) {
+      if (file.isFile) {
+        var outFile = await localFile(
+            '${bundleName.replaceAll('.zip', '')}/${file.name}');
+        outFile = await outFile.create(recursive: true);
+        await outFile.writeAsBytes(file.content);
+      }
+    }
   }
 
   // Check if it has to download the bundle or it's stored locally.
   Future<bool> hasToDownloadBundle(String bundleName) async {
     final path = await _localPath;
-    var file = File('$path/$bundleName.zip');
-    return !(await file.exists());
+    return !(await Directory('$path/bundles/$bundleName').exists());
   }
 
-  // Creates a reference to the bundle’s full location
-  Future<File> localBundle(String filename) async {
+  // Creates a reference to the file’s full location
+  Future<File> localFile(String filename) async {
     final path = await _localPath;
-    return File('$path/$filename');
+    return File('$path/bundles/$filename');
   }
 
   // Specifies the path to store the bundle.
   Future<String> get _localPath async {
     final directory = await getApplicationSupportDirectory();
-
     return directory.path;
+  }
+
+  // Load UI from json
+  Future<JsonWidgetData> loadUI(
+      {required String url, required String bundleName}) async {
+    if (await hasToDownloadBundle(bundleName)) {
+      debugPrint('Download');
+      await downloadBundle(
+        url: url,
+        bundleName: '$bundleName.zip',
+      );
+    }
+
+    final file = await localFile('$bundleName/ui.json');
+    debugPrint('Loaded');
+    return JsonWidgetData.fromDynamic(
+      json.decode(await file.readAsString()),
+    )!;
   }
 
   // Registers the function bindings.
