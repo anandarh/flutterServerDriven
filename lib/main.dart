@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_server_driven/pages/action_page.dart';
 import 'package:flutter_server_driven/pages/form_page.dart';
 import 'package:flutter_server_driven/utils.dart';
 
@@ -39,33 +40,68 @@ class _MainAppState extends State<MainApp> {
         title: const Text('Flutter Server Driven'),
       ),
       body: Center(
-        child: Container(
-          margin: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            border: Border.all(),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const FormPage(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              margin: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FormPage(),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(4),
+                splashColor: Colors.green,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: const [
+                      Icon(Icons.download),
+                      SizedBox(width: 15),
+                      Text('Load Feature A'),
+                    ],
+                  ),
                 ),
-              );
-            },
-            splashColor: Colors.green,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: const [
-                  Icon(Icons.download),
-                  SizedBox(width: 15),
-                  Text('Load Feature A'),
-                ],
               ),
             ),
-          ),
+            Container(
+              margin: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ActionPage(),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(4),
+                splashColor: Colors.green,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: const [
+                      Icon(Icons.download),
+                      SizedBox(width: 15),
+                      Text('Load Feature B'),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

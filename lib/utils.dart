@@ -44,9 +44,18 @@ class Utils {
     return directory.path;
   }
 
+  // Specifies the path to store the bundle.
+  Future<String> localBundleDir(String bundleName) async {
+    final path = await _localPath;
+    return '$path/bundles/$bundleName';
+  }
+
   // Load UI from json
-  Future<JsonWidgetData> loadUI(
-      {required String url, required String bundleName}) async {
+  Future<JsonWidgetData> loadUI({
+    required String url,
+    required String bundleName,
+    JsonWidgetRegistry? registry,
+  }) async {
     if (await hasToDownloadBundle(bundleName)) {
       debugPrint('Download');
       await downloadBundle(
@@ -57,9 +66,8 @@ class Utils {
 
     final file = await localFile('$bundleName/ui.json');
     debugPrint('Loaded');
-    return JsonWidgetData.fromDynamic(
-      json.decode(await file.readAsString()),
-    )!;
+    return JsonWidgetData.fromDynamic(json.decode(await file.readAsString()),
+        registry: registry)!;
   }
 
   // Registers the function bindings.
@@ -73,6 +81,7 @@ class Utils {
             final valid = Form.of(context).validate();
             registry.setValue('form_validation', valid);
           },
+      'noop': ({args, required registry}) => () {},
     });
   }
 }
